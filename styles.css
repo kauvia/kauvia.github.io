@@ -1,0 +1,79 @@
+body {
+    padding: 0;
+    margin: 0;
+    background-color: grey;
+}
+
+#container {
+    position: fixed;
+    top:25px;
+    left:25px;
+    background-color: black;
+    border: 1px solid black;
+    height: 600px;
+    width: 600px;
+}
+
+
+
+.map-background {
+    z-index: -1;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    height: 5000px;
+    width: 5000px;
+    border: 3px solid red;
+    display: block;
+}
+
+.player {
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    background-color: rgb(255, 0, 0);
+    border-top: 3px solid black;
+}
+
+.asteroid {
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    background-color: black;
+    border-top: 3px solid fuchsia;
+}
+
+.bullet {
+    position: absolute;
+    width: 5px;
+    height: 2px;
+    background-color: black;
+    border-top: 3px solid rgb(172, 17, 172);
+    display: block;
+}
+
+.mineral {
+    position: absolute;
+    width: 10px;
+    height: 8px;
+    background-color: black;
+    border-top: 3px solid rgb(172, 17, 172);
+    display: block;
+}
+.space-station {
+    z-index: -1;
+    position: absolute;
+    border-radius: 50%;
+    width: 200px;
+    height: 200px;
+    background-color: rgb(0, 17, 255);
+    border: 3px solid rgb(30, 172, 17);
+    display: block;
+}
+#button {
+    z-index: 5;
+}
+
+canvas {
+    z-index: 10;
+}

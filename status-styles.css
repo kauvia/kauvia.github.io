@@ -1,0 +1,47 @@
+#secondary-container{
+    z-index: 5;
+    position: fixed;
+    top: 25px;
+    left: 650px;
+    height: 600px;
+    width: 300px;
+    border: 1px solid black;
+    background-color: darkgrey;
+
+}
+
+.station {
+    z-index: 15;
+    position: absolute;
+    top: 0%;
+    left: 5%;
+    margin: 10% auto;
+    width: 90%;
+    height: 80%;
+    background-color: darkgray;
+    border: 1px solid black;
+    display: none;
+
+
+}
+
+.status-player {
+    text-align: center;
+    position: relative;
+    margin: 10% auto;
+    width: 250px;
+    height: 250px;
+    background-color: gray;
+    border: 1px solid black;
+}
+#minimap{
+    background-color: black
+}
+
+.panel {
+    margin: 5% auto;
+    width: 90%;
+    height: auto;
+    background-color: grey;
+    border: 1px solid black;
+}
