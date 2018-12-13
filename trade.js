@@ -157,20 +157,90 @@ class _oreTradeObject extends _tradeObject {
     }
 }
 oreTradeList = [];
-for (let ore in ores) {
-    oreTradeList.push(new _oreTradeObject(ores[ore]))
-}
-for (let ore in oreTradeList) {
-    let orePanel = document.getElementById('Ores-panel');
-    orePanel.appendChild(oreTradeList[ore].display);
-    oreTradeList[ore].setupPanel(spaceStationJilted);
-}
 
-weaponsTradeList = [];
-for (let weapon in weapons) {
-    weaponsTradeList.push(new _tradeObject(weapons[weapon]))
+class _weaponTradeObject extends _tradeObject {
+    constructor(obj) {
+        super(obj);
+        this.sellButton = document.createElement('button');
+        this.buyButton = document.createElement('button');
+        this.weaponName = document.createElement('div');
+        this.playerStock = document.createElement('div');
+        this.buy = this.buy.bind(this);
+        this.sell = this.sell.bind(this);
+        this.id = obj.id;
+    }
+    setupPanel(station) {
+        this.buyButton.innerHTML = 'Buy';
+        this.buyButton.onclick = this.buy;
+        this.buyButton.style.display = 'inline-block';
+        this.buyButton.style.width = '8%';
+        this.display.appendChild(this.buyButton);
+
+        //     this.updateStocks(station);
+
+
+        this.weaponName.innerHTML = `${this.obj.name}:${this.obj.value}c`;
+        this.weaponName.style.display = 'inline-block';
+        this.weaponName.style.width = '20%';
+        this.display.appendChild(this.weaponName);
+        this.display.style.textAlign = 'center';
+
+
+        this.playerStock.style.display = 'inline-block';
+        this.playerStock.style.width = '20%';
+        this.display.appendChild(this.playerStock);
+
+        this.sellButton.innerHTML = 'Sell';
+        this.sellButton.onclick = this.sell;
+        this.sellButton.style.display = 'inline-block';
+        this.sellButton.style.width = '8%';
+        this.display.appendChild(this.sellButton);
+
+        this.display.style.border = '1px solid black';
+        this.display.style.height = `${100/weaponsTradeList.length}%`;
+    }
+    buy() {
+        if (player.credits >= this.obj.value &&
+            player.ship.weaponHardpoints.length < player.ship.maxWeaponHardpoints) {
+            player.credits -= this.obj.value;
+            player.ship.weaponHardpoints.push(weapons[this.id]);
+            updateCreditCargoDisp();
+        }
+    }
+    sell() {
+        for (i = 0; i < player.ship.weaponHardpoints.length; i++) {
+            if (player.ship.weaponHardpoints[i].name == this.obj.name) {
+                player.credits += this.obj.value;
+                player.ship.weaponHardpoints.splice(i,1);
+                updateCreditCargoDisp();
+                break;
+
+
+            }
+        }
+
+    }
 }
-for (let weapon in weaponsTradeList) {
-    let weaponPanel = document.getElementById('Weapons-panel');
-    weaponPanel.appendChild(weaponsTradeList[weapon].display)
+let weaponsTradeList = [];
+
+
+const populateTradeObjects = () => {
+    for (let ore in ores) {
+        oreTradeList.push(new _oreTradeObject(ores[ore]))
+    }
+    for (let ore in oreTradeList) {
+        let orePanel = document.getElementById('Ores-panel');
+        orePanel.appendChild(oreTradeList[ore].display);
+        oreTradeList[ore].setupPanel(spaceStationJilted);
+    }
+
+    for (let weapon in weapons) {
+        weaponsTradeList.push(new _weaponTradeObject(weapons[weapon]))
+    }
+    for (let weapon in weaponsTradeList) {
+        let weaponPanel = document.getElementById('Weapons-panel');
+        weaponPanel.appendChild(weaponsTradeList[weapon].display)
+        weaponsTradeList[weapon].setupPanel(spaceStationJilted)
+
+    }
 }

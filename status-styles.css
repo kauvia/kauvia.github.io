@@ -24,7 +24,46 @@
 
 
 }
+#menu-container {
+    text-align: center;
+    z-index: 16;
+    position: absolute;
+    top: 0%;
+    left: 5%;
+    margin: 10% auto;
+    width: 90%;
+    height: 80%;
+    border: 1px solid black;
+    display: block;
+}
+#game-over-container {
+    text-align: center;
+    z-index: 20;
+    position: absolute;
+    top: 0%;
+    left: 5%;
+    margin: 10% auto;
+    width: 90%;
+    height: 80%;
+    border: 1px solid black;
+    display: none;
 
+
+}
+#instruction-container {
+    text-align: center;
+    z-index: 16;
+    position: absolute;
+    top: 0%;
+    left: 5%;
+    margin: 10% auto;
+    width: 90%;
+    height: 80%;
+    border: 1px solid black;
+    display: none;
+
+
+}
 .status-player {
     text-align: center;
     position: relative;

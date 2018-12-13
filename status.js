@@ -2,6 +2,8 @@ const secondaryContainer = document.getElementById('secondary-container');
 const stationContainer = document.createElement('div');
 const playerContainer = document.createElement('div');
 const minimapContainer = document.createElement('div');
+const menuContainer = document.createElement('div');
+const gameOverContainer = document.createElement('div');
 
 const playerElements = () => {
     playerContainer.className = 'status-player';
@@ -11,7 +13,7 @@ const playerElements = () => {
     secondaryContainer.appendChild(playerContainer);
     secondaryContainer.appendChild(minimapContainer);
 }
-playerElements();
+
 const stationElements = () => {
     stationContainer.className = 'station';
     gameContainer.appendChild(stationContainer);
@@ -81,7 +83,7 @@ const updateCreditCargoDisp = () => {
 
 }
 
-stationElements();
+
 
 const minimapStatics = () => {
     //  minimapContainer.style.backgroundImage = "url('images/minimap.png')";
@@ -90,7 +92,8 @@ const minimapStatics = () => {
         stationDisp.src = `${spaceStations[station].mapImg}`;
         stationDisp.style.height = '20px';
         stationDisp.style.width = '20px';
-        if (stationDisp.src == 'http://localhost:3000/images/skullcross.png') {
+        if (stationDisp.src == 'http://localhost:3000/images/skullcross.png' ||
+            stationDisp.src == 'https://kauvia.github.io/images/skullcross.png') {
             stationDisp.style.height = '12px';
             stationDisp.style.width = '16px';
         }
@@ -129,6 +132,26 @@ const minimapUpdate = () => {
 }
 
 const playerDetailSetup = () => {
+    let menuButton = document.createElement('button');
+    playerContainer.appendChild(menuButton);
+    menuButton.innerHTML = 'Menu';
+    menuButton.style.position = 'absolute';
+    menuButton.style.top = '0px';
+    menuButton.style.right = '0px';
+    menuButton.onclick = () => {
+        pauseGame();
+        menuContainer.style.display = 'block';
+        let newGameButton = document.getElementById('New Game-button');
+        newGameButton.style.display = 'none';
+        let saveGameButton = document.getElementById('Save Game-button');
+        saveGameButton.style.display = 'block';
+        let loadGameButton = document.getElementById('Load Game-button');
+        loadGameButton.style.display = 'none';
+        let resumeGameButton = document.getElementById('Resume Game-button');
+        resumeGameButton.style.display = 'block';
+
+    }
+
     let playerAndShip = document.createElement('div');
     playerContainer.appendChild(playerAndShip);
     let statusBars = ['Energy', 'Shield', 'Hull'];
@@ -158,6 +181,7 @@ const playerDetailSetup = () => {
         fullBar.appendChild(dynamicBar)
     }
 
+
     let creditCargo = document.createElement('div');
     creditCargo.id = 'status-credit-cargo';
     playerContainer.appendChild(creditCargo);
@@ -172,10 +196,130 @@ const playerDetailUpdate = () => {
     let energy = document.getElementById('Energy-dynamic');
     let shield = document.getElementById('Shield-dynamic');
     let hull = document.getElementById('Hull-dynamic');
-
-    energy.style.width = `${player.ship.energy/player.ship.maxEnergy*100}%`;
-    shield.style.width = `${player.ship.shield/player.ship.maxShield*100}%`;
-    hull.style.width = `${player.ship.hull/player.ship.maxHull*100}%`;
+    let statusArray = [
+        [energy, player.ship.energy, player.ship.maxEnergy],
+        [shield, player.ship.shield, player.ship.maxShield],
+        [hull, player.ship.hull, player.ship.maxHull]
+    ];
+    for (let i = 0; i < statusArray.length; i++) {
+        dynamicStatusBarUpdate(statusArray[i][0], statusArray[i][1], statusArray[i][2]);
+    }
+}
+const dynamicStatusBarUpdate = (display, status, maxStatus) => {
+    display.style.width = `${status/maxStatus*100}%`;
+    let statusPercentage = status / maxStatus * 100;
+    if (statusPercentage < 33) {
+        display.style.backgroundColor = 'red';
+    } else if (statusPercentage < 67) {
+        display.style.backgroundColor = 'yellow';
+    } else {
+        display.style.backgroundColor = 'blue';
+    }
 }
 
-playerDetailSetup();
+
+
+const menuScreenSetup = () => {
+    menuContainer.id = 'menu-container';
+    menuContainer.style.backgroundImage = 'url(images/minimap.png)';
+    let buttonsContainer = document.createElement('div');
+    gameContainer.appendChild(menuContainer);
+    menuContainer.appendChild(buttonsContainer);
+    let buttonsGameTitle = document.createElement('div');
+    buttonsGameTitle.style.fontSize = '55px';
+    buttonsGameTitle.style.color = 'antiquewhite';
+    buttonsGameTitle.innerHTML = 'Star Plebe';
+    buttonsContainer.appendChild(buttonsGameTitle);
+    buttonsContainer.style.marginTop = '20%'
+    let buttonArray = ['New Game', 'Load Game', 'Save Game', 'Resume Game', 'Instructions'];
+    for (i = 0; i < buttonArray.length; i++) {
+        let button = document.createElement('button');
+        button.id = `${buttonArray[i]}-button`;
+        button.className = 'button';
+        button.innerHTML = `${buttonArray[i]}`;
+        button.style.width = '80%';
+        button.style.margin = '0 auto';
+        button.style.height = '40px';
+        buttonsContainer.appendChild(button);
+    };
+    let newGameButton = document.getElementById('New Game-button');
+    newGameButton.onclick = startGame;
+    let saveGameButton = document.getElementById('Save Game-button');
+    saveGameButton.onclick = saveGame;
+    saveGameButton.style.display = 'none';
+    let resumeGameButton = document.getElementById('Resume Game-button');
+    resumeGameButton.onclick = () => {
+        resumeGame();
+        menuContainer.style.display = 'none';
+
+    };
+    resumeGameButton.style.display = 'none';
+
+    let loadGameButton = document.getElementById('Load Game-button');
+    loadGameButton.onclick = loadGame;
+    let instructionButton = document.getElementById('Instructions-button');
+    instructionButton.onclick = openInstruction;
+}
+
+const openInstruction = () => {
+    let instructionContainer = document.createElement('div');
+    instructionContainer.id = 'instruction-container';
+    instructionContainer.style.textAlign = 'center';
+    instructionContainer.style.backgroundImage = 'url(images/minimap.png)';
+    let instructionText = document.createElement('div');
+    let closeButton = document.createElement('button');
+    instructionContainer.appendChild(instructionText);
+    instructionContainer.appendChild(closeButton);
+    gameContainer.appendChild(instructionContainer);
+
+    instructionContainer.style.display = 'block';
+    menuContainer.style.display = 'none';
+
+    closeButton.onclick = () => {
+        instructionContainer.style.display = 'none';
+        menuContainer.style.display = 'block';
+    }
+    closeButton.innerHTML = 'Close Instructions';
+
+    instructionText.style.marginTop = '20%'
+    instructionText.style.marginBottom = '10%'
+
+    instructionText.style.color = 'antiquewhite'
+    instructionText.style.fontSize = '33px'
+    instructionText.innerHTML = 'Explore, Mine, Trade, Kill <br> Warning: Killing peaceful ships will result in retaliation. <br> Controls : WSAD to move. F to fire.<br> R to dock or pick up ores.'
+
+}
+
+const gameOverSetup = () => {
+    let gameOverWrapper = document.createElement('div');
+    gameOverContainer.id = 'game-over-container';
+    gameContainer.appendChild(gameOverContainer);
+    gameOverContainer.appendChild(gameOverWrapper);
+    gameOverWrapper.style.marginTop ='20%';
+    let restartButton=document.createElement('button');
+    let gameOverText=document.createElement('div');
+    let gameOverTitle = document.createElement('div');
+    gameOverTitle.innerHTML= 'Game Over';
+    gameOverTitle.style.fontSize = '55px';
+    gameOverTitle.style.color = 'antiquewhite';
+    gameOverText.id = 'game-over-text';
+    gameOverWrapper.appendChild(gameOverTitle);
+    gameOverWrapper.appendChild(gameOverText);
+    gameOverWrapper.appendChild(restartButton);
+    gameOverContainer.style.backgroundImage = 'url(images/minimap.png)';
+    restartButton.innerHTML="Restart Game";
+    restartButton.onclick = restartGame;
+}
+
+const gameOver = () => {
+    let gameOverText = document.getElementById('game-over-text');
+    if (player.credits <= 0){gameOverText.innerHTML='You died peniless.'
+    } else if (player.karma > 100){
+        gameOverText.innerHTML="You died a villian."
+    } else {gameOver.innerHTML="Pirates hunted you down."};
+    gameOverContainer.style.display = 'block';
+    menuContainer.style.display = 'none';
+}
+
+menuScreenSetup();
+gameOverSetup();

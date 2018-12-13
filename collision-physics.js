@@ -1,5 +1,5 @@
-const visibleAsteroids = {};
-const oreList = {};
+let visibleAsteroids = {};
+let oreList = {};
 
 const visibleObject = () => {
     for (asteroid in asteroidList) {
@@ -22,7 +22,8 @@ const asteroidCollisionDetection = (bulletArray, dt) => {
                 bulletArray[bullet].posXY[1] + bulletArray[bullet].height >= asteroidList[asteroid].posXY[1] &&
                 bulletArray[bullet].posXY[1] <= asteroidList[asteroid].posXY[1] + asteroidList[asteroid].height) {
                 asteroidList[asteroid].hull -= bulletArray[bullet].damage;
-                delete bulletArray[bullet];
+                if (bulletArray[bullet].bullet.name != 'c-beam'){
+                delete bulletArray[bullet];}
                 if (asteroidList[asteroid].hull <= 0) {
                     asteroidList[asteroid].spawnOres(dt);
                     delete asteroidList[asteroid];
@@ -50,7 +51,8 @@ const collisionDetection = (bulletArray, targetArray, dt) => {
                         targetArray[target].ship.hull -= bulletArray[bullet].damage;
 
                     };
-                    delete bulletArray[bullet];
+                    if (bulletArray[bullet].bullet.name != 'c-beam'){
+                        delete bulletArray[bullet];}
                     if (targetArray[target].ship.hull <= 0) {
                         if (bulletArray == playerBulletObjArray) {
                             if (targetArray == traderArray || targetArray == policeArray) {
@@ -92,6 +94,7 @@ const collisionDetection = (bulletArray, targetArray, dt) => {
                 if (targetArray.ship.hull <= 0) {
                     if (targetArray == player) {
                         targetArray.ship.hull = 0;
+                        gameOver();
                         //                       console.log('you died')
 
                     }

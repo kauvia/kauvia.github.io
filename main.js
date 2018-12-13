@@ -21,6 +21,7 @@ class _ship {
     constructor(ship) {
         this.name = ship.name;
         this.img = ship.img;
+        this.id = ship.id;
         this.width = ship.width;
         this.height = ship.height;
         this.maxSpeed = ship.maxSpeed;
@@ -110,11 +111,11 @@ class _player extends _gameObject {
     updatePlayer(dt) {
         this.posXY[0] += this.veloXY[0] * dt;
         this.posXY[1] -= this.veloXY[1] * dt;
-        this.rechargeShield(dt);
-        if (this.karma >0){
-            this.karma -=dt;
-            console.log(this.karma)
+        this.rechargeEnergyShield(dt);
+        if (this.karma > 0) {
+            this.karma -= dt;
         }
+
     }
     acceleratePlayer(dt) {
         this.veloXY[0] += Math.sin(toRad(this.angle)) * this.ship.accel * dt;
@@ -125,7 +126,9 @@ class _player extends _gameObject {
         this.veloXY[1] -= Math.cos(toRad(this.angle)) * this.ship.accel * dt;
     }
     shootBullet(now) {
+        if (player.ship.energy >= player.ship.weaponHardpoints[0].energyUsage){
         if (now - this.timeFiredBullet[0] > this.ship.weaponHardpoints[0].rateOfFire) {
+            player.ship.energy -=player.ship.weaponHardpoints[0].energyUsage;
             this.timeFiredBullet[0] = Date.now();
             let bullet = new _bullet(this.posXY[0], this.posXY[1], 'bullet', `bullet${gameTime}`, this.ship.weaponHardpoints[0].bullet, [], [], this.angle);
             bullet.veloXY[0] = player.veloXY[0] + Math.sin(toRad(this.angle)) * this.ship.weaponHardpoints[0].bulletVelocity;
@@ -136,15 +139,18 @@ class _player extends _gameObject {
                     playerBulletObjArray[bullet.id];
                     delete playerBulletObjArray[bullet.id];
                 }
-            }, 10000)
+            }, player.ship.weaponHardpoints[0].dissipation)
 
         }
 
-
     }
-    rechargeShield(dt) {
+    }
+    rechargeEnergyShield(dt) {
         if (player.ship.shield < player.ship.maxShield) {
             player.ship.shield++;
+        }
+        if (player.ship.energy < player.ship.maxEnergy) {
+            player.ship.energy++;
         }
     }
     pickUpOre() {
@@ -305,7 +311,7 @@ class _enemy extends _gameObject {
                 this.patrolPirateStation(dt, now);
                 break;
             case 'raider':
-                this.raidPlayer(dt,now);
+                this.raidPlayer(dt, now);
                 break;
             case 'trader':
                 this.tradeRun(dt, now);
@@ -315,7 +321,18 @@ class _enemy extends _gameObject {
                 break;
         }
     }
-
+    killVelocity(dt, multiplier = 1) {
+        if (this.veloXY[0] > 0) {
+            this.veloXY[0] -= this.ship.accel * dt * multiplier
+        } else if (this.veloXY[0] < 0) {
+            this.veloXY[0] += this.ship.accel * dt * multiplier
+        }
+        if (this.veloXY[1] > 0) {
+            this.veloXY[1] -= this.ship.accel * dt * multiplier
+        } else if (this.veloXY[1] < 0) {
+            this.veloXY[1] += this.ship.accel * dt * multiplier
+        }
+    }
     tradeRun(dt) {
         let distance = findDistance(this, this.targetStation);
         let relativeVelocity = findRelativeVelocity(this, this.targetStation);
@@ -325,23 +342,25 @@ class _enemy extends _gameObject {
         } else if (relativeAngle < this.angle) {
             this.angle -= 3;
         };
-        if (distance > 100) {
+        if (distance > 300) {
             if (distance > 600) {
                 this.accelerate(dt)
-            } else if (distance < 600 && relativeVelocity > 50) {
-                this.deccelerate(dt);
-
+                // } else if (distance < 300 && relativeVelocity > 100) {
+                //     this.deccelerate(dt)
+                // } else {
+                //     this.accelerate(dt)
+            }
+        } else if (distance < 300 && distance > 50) {
+            if (Math.abs(relativeVelocity) > 80) {
+                this.killVelocity(dt, .1)
             } else {
                 this.accelerate(dt)
             }
-        } else if (distance < 100) {
-            if (relativeVelocity > 20) {
-                this.deccelerate(dt)
-            } else if (relativeVelocity < -20) {
-                this.accelerate(dt)
-            }
         };
-        if (distance < 50 && Math.abs(relativeVelocity) < 30) {
+        if (distance < 70) {
+            this.killVelocity(dt, .2)
+        };
+        if (distance < 70 && Math.abs(relativeVelocity) < 5) {
             this.veloXY = [0, 0];
             this.targetStation = spaceStationArray[ranN(3)];
         }
@@ -349,7 +368,7 @@ class _enemy extends _gameObject {
     patrolMap(dt, now) {
         let playerDistance = findDistance(this, player);
         if (playerDistance < 1000 && player.karma >= 100) {
-            this.engagePlayer(dt,now)
+            this.engagePlayer(dt, now)
         } else {
             let distance = findDistance(this, this.patrolPoint);
             let relativeAngle = Math.floor(findAngle(this, this.patrolPoint));
@@ -368,11 +387,11 @@ class _enemy extends _gameObject {
             }
         }
     }
-    raidPlayer(dt,now){
-        if (player.ship.cargo.length>0){
-            this.engagePlayer(dt,now)
+    raidPlayer(dt, now) {
+        if (player.ship.cargo.length > 0) {
+            this.engagePlayer(dt, now)
         } else {
-            this.patrolMap(dt,now)
+            this.patrolMap(dt, now)
         }
     }
     patrolPirateStation(dt, now) {
@@ -517,8 +536,8 @@ canvas.width = 600;
 canvas.height = 600;
 gameContainer.appendChild(canvas);
 let timeFiredBullet = Date.now();
-
-let lastTime = Date.now();
+let gameTime;
+let lastTime;
 const main = () => {
     let now = Date.now();
     let dt = (now - lastTime) / 1000.0;
@@ -536,7 +555,7 @@ const main = () => {
 
 }
 
-let gameTime = Date.now();
+
 
 
 const update = (dt, now) => {
@@ -627,7 +646,7 @@ function updateEntities(dt, now) {
 const render = () => {
     minimapUpdate();
     playerDetailUpdate();
-   // ctx.fillStyle = 'black';
+    // ctx.fillStyle = 'black';
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     for (let station in spaceStationArray) {
         spaceStationArray[station].renderObject()
@@ -669,8 +688,8 @@ const render = () => {
 }
 
 
-let player = new _player(2500, 2500, 'player', 'player1', new _ship(ships[0]), [300, 300])
-player.credits = 10000;
+ 
+
 // let image = new Image();
 // image.src = player.ship.img;
 
