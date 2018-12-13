@@ -147,7 +147,7 @@ class _player extends _gameObject {
     }
     rechargeEnergyShield(dt) {
         if (player.ship.shield < player.ship.maxShield) {
-            player.ship.shield++;
+            player.ship.shield+=dt*30;
         }
         if (player.ship.energy < player.ship.maxEnergy) {
             player.ship.energy++;

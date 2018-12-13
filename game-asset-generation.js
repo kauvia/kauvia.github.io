@@ -14,7 +14,7 @@ let player;
 
 const startGame = () => {
     playerName = prompt('What is your name?');
-    player = new _player(2500, 2500, 'player', playerName, new _ship(ships[0]), [300, 300]);
+    player = new _player(ranN(1000) + 1000, ranN(1000) + 1000, 'player', playerName, new _ship(ships[0]), [300, 300]);
     player.credits = 10000;
     playerDetailSetup();
     playerElements();
@@ -92,7 +92,7 @@ const generateEnemy = (array, num, type, x0, width, y0, height) => {
 generateEnemy(pirateArray, 20, 'pirate', 0, 5000, 0, 5000);
 generateEnemy(raiderArray, 10, 'raider', 0, 5000, 0, 5000);
 generateEnemy(traderArray, 80, 'trader', 0, 5000, 0, 5000);
-generateEnemy(policeArray, 40, 'police', 0, 5000, 0, 5000);
+generateEnemy(policeArray, 30, 'police', 0, 5000, 0, 5000);
 
 const findAngle = (obj1, obj2) => {
     let angle = Math.atan2(obj2.posXY[1] - obj1.posXY[1], obj2.posXY[0] - obj1.posXY[0]);
@@ -155,40 +155,46 @@ const loadGame = () => {
     gameTime = Date.now();
     lastTime = Date.now();
     requestAnimFrame(main);
-console.log(player+' '+credit+' '+ship+' '+karma)
+    console.log(player + ' ' + credit + ' ' + ship + ' ' + karma)
 }
 
 const restartGame = () => {
-     dockedStation = null;
- playerBulletObjArray = {};
+    dockedStation = null;
+    playerBulletObjArray = {};
 
- pirateArray = [];
- raiderArray = [];
- traderArray = [];
- policeArray = [];
+    pirateArray = [];
+    raiderArray = [];
+    traderArray = [];
+    policeArray = [];
 
- pirateBulletArray = {};
- raiderBulletArray = {};
- traderBulletArray = {};
- policeBulletArray = {};
+    pirateBulletArray = {};
+    raiderBulletArray = {};
+    traderBulletArray = {};
+    policeBulletArray = {};
 
- asteroidList = {};
- visibleAsteroids = {};
- oreList={};
- gameOverContainer.style.display='none';
+    asteroidList = {};
+    visibleAsteroids = {};
+    oreList = {};
+    gameOverContainer.style.display = 'none';
 
     player = new _player(ranN(3000), ranN(3000), 'player', playerName, new _ship(ships[0]), [300, 300]);
- //   playerDetailSetup();
- //   playerElements();
- //   stationElements();
-//    populateTradeObjects();
+    //   playerDetailSetup();
+    //   playerElements();
+    //   stationElements();
+    //    populateTradeObjects();
     isGameRunning = true;
     for (let field in asteroidFields) {
         generateAsteroids(asteroidFields[field][0], asteroidFields[field][1], asteroidFields[field][2], asteroidFields[field][3], asteroidFields[field][4], asteroidFields[field][5])
     };
     menuContainer.style.display = 'none';
-  //  minimapStatics();
+    //  minimapStatics();
     gameTime = Date.now();
     lastTime = Date.now();
     requestAnimFrame(main);
+
+    generateEnemy(pirateArray, 20, 'pirate', 0, 5000, 0, 5000);
+    generateEnemy(raiderArray, 10, 'raider', 0, 5000, 0, 5000);
+    generateEnemy(traderArray, 80, 'trader', 0, 5000, 0, 5000);
+    generateEnemy(policeArray, 30, 'police', 0, 5000, 0, 5000);
+
 }
