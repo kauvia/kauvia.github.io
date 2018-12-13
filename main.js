@@ -541,7 +541,10 @@ let lastTime;
 const main = () => {
     let now = Date.now();
     let dt = (now - lastTime) / 1000.0;
-
+    if (dt > 1){
+        now = Date.now();
+        dt = 0.20;
+    }
     if (isGameRunning) {
 
         update(dt, now);
