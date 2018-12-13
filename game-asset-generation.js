@@ -15,7 +15,7 @@ let player;
 const startGame = () => {
     playerName = prompt('What is your name?');
     player = new _player(ranN(1000) + 1000, ranN(1000) + 1000, 'player', playerName, new _ship(ships[0]), [300, 300]);
-    player.credits = 10000;
+    player.credits = 0;
     playerDetailSetup();
     playerElements();
     stationElements();
